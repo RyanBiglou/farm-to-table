@@ -1,0 +1,124 @@
+.farms-hero {
+  background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest) 100%);
+  padding: var(--space-2xl) 0;
+  text-align: center;
+}
+
+.farms-hero-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.farms-hero h1 {
+  color: var(--cream);
+  margin-bottom: var(--space-md);
+}
+
+.farms-hero p {
+  font-size: 1.25rem;
+  color: var(--cream-dark);
+}
+
+.farms-content {
+  padding: var(--space-2xl) 0;
+}
+
+.farms-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+@media (min-width: 640px) {
+  .farms-toolbar {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.search-bar {
+  flex: 1;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: var(--space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--soil-light);
+}
+
+.search-bar input {
+  width: 100%;
+  padding: var(--space-md) var(--space-md) var(--space-md) 48px;
+  background: var(--white);
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  transition: all var(--transition-base);
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--forest);
+  box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--white);
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--radius-full);
+  color: var(--soil-light);
+}
+
+.sort-controls select {
+  border: none;
+  background: transparent;
+  font-size: 0.9375rem;
+  color: var(--soil);
+  cursor: pointer;
+}
+
+.sort-controls select:focus {
+  outline: none;
+}
+
+.results-count {
+  color: var(--soil-light);
+  margin-bottom: var(--space-lg);
+}
+
+.farms-grid-large {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+@media (min-width: 640px) {
+  .farms-grid-large {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .farms-grid-large {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--soil-light);
+}
+
+.no-results p {
+  margin-bottom: var(--space-lg);
+  font-size: 1.125rem;
+}
+
