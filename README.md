@@ -1,6 +1,6 @@
-# Harvest & Hearth 🌿
+# Harvest & Hearth
 
-A beautiful Farm-to-Table marketplace connecting consumers with local farmers selling fresh produce.
+A Farm-to-Table marketplace connecting consumers with local farmers selling fresh produce.
 
 ## Features
 
@@ -17,7 +17,7 @@ A beautiful Farm-to-Table marketplace connecting consumers with local farmers se
 - **Vite** - Fast build tool
 - **React Router** - Client-side routing
 - **Framer Motion** - Animations
-- **Lucide React** - Beautiful icons
+- **Lucide React** - Icons
 - **CSS Variables** - Theming and consistency
 
 ## Getting Started
