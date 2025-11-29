@@ -5,7 +5,6 @@ import './Footer.css';
 export default function Footer() {
   return (
     <footer className="footer">
-      <div className="footer-pattern"></div>
       <div className="footer-content container">
         <div className="footer-main">
           <div className="footer-brand">
@@ -13,7 +12,7 @@ export default function Footer() {
               <div className="footer-logo-icon">
                 <Leaf size={20} />
               </div>
-              <span>Harvest<span className="logo-accent">&</span>Hearth</span>
+              <span>Farm<span className="logo-accent">To</span>Table</span>
             </Link>
             <p className="footer-tagline">
               Connecting you with local farmers who grow food with care. 
@@ -51,9 +50,9 @@ export default function Footer() {
 
             <div className="footer-column">
               <h4>Contact</h4>
-              <a href="mailto:hello@harvestandhearth.com" className="contact-link">
+              <a href="mailto:hello@farmtotable.com" className="contact-link">
                 <Mail size={16} />
-                hello@harvestandhearth.com
+                hello@farmtotable.com
               </a>
               <a href="tel:+15551234567" className="contact-link">
                 <Phone size={16} />
@@ -68,10 +67,10 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>© 2024 Harvest & Hearth. All rights reserved.</p>
+          <p>© 2024 Farm To Table. All rights reserved.</p>
           <div className="footer-legal">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
+            <Link to="/privacy">Privacy Policy</Link>
+            <Link to="/terms">Terms of Service</Link>
           </div>
         </div>
       </div>

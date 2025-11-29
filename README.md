@@ -1,4 +1,4 @@
-# Harvest & Hearth
+# Farm To Table
 
 A Farm-to-Table marketplace connecting consumers with local farmers selling fresh produce.
 

@@ -6,23 +6,6 @@
   overflow: hidden;
 }
 
-.footer-pattern {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--terracotta) 0px,
-    var(--terracotta) 40px,
-    var(--golden) 40px,
-    var(--golden) 80px,
-    var(--forest-light) 80px,
-    var(--forest-light) 120px
-  );
-}
-
 .footer-content {
   padding-top: var(--space-2xl);
   padding-bottom: var(--space-xl);

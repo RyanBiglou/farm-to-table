@@ -17,7 +17,7 @@ export default function Header() {
             <Leaf size={24} />
           </div>
           <span className="logo-text">
-            Harvest<span className="logo-accent">&</span>Hearth
+            Farm<span className="logo-accent">To</span>Table
           </span>
         </Link>
 
