@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Plus, Minus, ShoppingBasket, ArrowLeft, ArrowRight, Truck, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { farms } from '../data/farms';
+import CheckoutButton from '../components/CheckoutButton';
 import './Cart.css';
 
 export default function Cart() {
@@ -146,10 +147,7 @@ export default function Cart() {
                 <span>${(cartTotal * 1.08).toFixed(2)}</span>
               </div>
               
-              <button className="btn btn-primary checkout-btn">
-                Proceed to Checkout
-                <ArrowRight size={18} />
-              </button>
+              <CheckoutButton cart={cart} cartTotal={cartTotal} />
               
               <button className="clear-cart" onClick={clearCart}>
                 Clear Cart
