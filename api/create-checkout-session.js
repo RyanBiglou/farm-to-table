@@ -1,4 +1,4 @@
-const Stripe = require('stripe');
+import Stripe from 'stripe';
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -7,7 +7,13 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Initialize Stripe with your secret key from environment variables
+  // Check for secret key
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('STRIPE_SECRET_KEY is not set');
+    return res.status(500).json({ error: 'Stripe is not configured' });
+  }
+
+  // Initialize Stripe
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   try {
@@ -23,7 +29,6 @@ export default async function handler(req, res) {
         currency: 'usd',
         product_data: {
           name: item.name,
-          description: item.farmName ? `From ${item.farmName}` : undefined,
         },
         unit_amount: Math.round(item.price * 100), // Stripe uses cents
       },
@@ -37,16 +42,11 @@ export default async function handler(req, res) {
       mode: 'payment',
       success_url: `${req.headers.origin}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.origin}/cart`,
-      // Optional: collect shipping address
-      shipping_address_collection: {
-        allowed_countries: ['US'],
-      },
     });
 
-    res.status(200).json({ sessionId: session.id, url: session.url });
+    return res.status(200).json({ sessionId: session.id, url: session.url });
   } catch (error) {
     console.error('Stripe error:', error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 }
-
