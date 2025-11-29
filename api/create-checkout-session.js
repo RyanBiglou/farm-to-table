@@ -1,9 +1,18 @@
 import Stripe from 'stripe';
 
 export default async function handler(req, res) {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   // Only allow POST requests
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
@@ -13,10 +22,12 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Stripe is not configured' });
   }
 
-  // Initialize Stripe
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
   try {
+    // Initialize Stripe
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2023-10-16',
+    });
+
     const { items } = req.body;
 
     if (!items || items.length === 0) {
@@ -30,18 +41,21 @@ export default async function handler(req, res) {
         product_data: {
           name: item.name,
         },
-        unit_amount: Math.round(item.price * 100), // Stripe uses cents
+        unit_amount: Math.round(item.price * 100),
       },
       quantity: item.quantity,
     }));
+
+    // Get the origin for redirect URLs
+    const origin = req.headers.origin || 'https://farm-to-tablevercel.vercel.app';
 
     // Create the checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${req.headers.origin}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin}/cart`,
+      success_url: `${origin}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/cart`,
     });
 
     return res.status(200).json({ sessionId: session.id, url: session.url });
