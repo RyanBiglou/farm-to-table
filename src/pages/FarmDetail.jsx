@@ -1,8 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Star, MapPin, Calendar, Award, ArrowLeft, ExternalLink } from 'lucide-react';
-import { getFarmById } from '../data/farms';
-import { getProductsByFarmId } from '../data/products';
+import { Star, MapPin, Calendar, Award, ArrowLeft, Loader } from 'lucide-react';
+import { useFarm, useFarmProducts } from '../hooks/useData';
 import ProductCard from '../components/ProductCard';
 import './FarmDetail.css';
 
@@ -22,8 +21,17 @@ const staggerContainer = {
 
 export default function FarmDetail() {
   const { id } = useParams();
-  const farm = getFarmById(id);
-  const products = getProductsByFarmId(id);
+  const { farm, loading: farmLoading } = useFarm(id);
+  const { products, loading: productsLoading } = useFarmProducts(id);
+
+  if (farmLoading) {
+    return (
+      <div className="loading-page">
+        <Loader size={32} className="spinner" />
+        <p>Loading farm...</p>
+      </div>
+    );
+  }
 
   if (!farm) {
     return (

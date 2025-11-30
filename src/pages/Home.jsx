@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Truck, Heart, Leaf, Star, MapPin } from 'lucide-react';
-import { farms } from '../data/farms';
-import { products } from '../data/products';
+import { useFarms, useProducts } from '../hooks/useData';
 import ProductCard from '../components/ProductCard';
 import FarmCard from '../components/FarmCard';
 import './Home.css';
@@ -22,6 +21,9 @@ const staggerContainer = {
 };
 
 export default function Home() {
+  const { farms } = useFarms();
+  const { products } = useProducts();
+  
   const featuredFarms = farms.slice(0, 3);
   const featuredProducts = products.slice(0, 6);
 

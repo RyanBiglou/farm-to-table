@@ -8,3 +8,24 @@
   flex: 1;
 }
 
+/* Loading page */
+.loading-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+  color: var(--soil-light);
+}
+
+.loading-page .spinner {
+  animation: spin 1s linear infinite;
+  color: var(--forest);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+

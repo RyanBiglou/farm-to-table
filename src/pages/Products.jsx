@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, X, Leaf } from 'lucide-react';
-import { products, categories } from '../data/products';
-import { farms } from '../data/farms';
+import { Search, X, Leaf, Loader } from 'lucide-react';
+import { useProducts } from '../hooks/useData';
+import { categories } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import './Products.css';
 
@@ -21,10 +21,20 @@ const staggerContainer = {
 };
 
 export default function Products() {
+  const { products, loading } = useProducts();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [organicOnly, setOrganicOnly] = useState(false);
   const [sortBy, setSortBy] = useState('name');
+
+  if (loading) {
+    return (
+      <div className="loading-page">
+        <Loader size={32} className="spinner" />
+        <p>Loading products...</p>
+      </div>
+    );
+  }
 
   const filteredProducts = products
     .filter(product => {

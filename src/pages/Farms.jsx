@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, SlidersHorizontal } from 'lucide-react';
-import { farms } from '../data/farms';
+import { Search, SlidersHorizontal, Loader } from 'lucide-react';
+import { useFarms } from '../hooks/useData';
 import FarmCard from '../components/FarmCard';
 import './Farms.css';
 
@@ -20,8 +20,18 @@ const staggerContainer = {
 };
 
 export default function Farms() {
+  const { farms, loading } = useFarms();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('distance');
+
+  if (loading) {
+    return (
+      <div className="loading-page">
+        <Loader size={32} className="spinner" />
+        <p>Loading farms...</p>
+      </div>
+    );
+  }
 
   const filteredFarms = farms
     .filter(farm => 
