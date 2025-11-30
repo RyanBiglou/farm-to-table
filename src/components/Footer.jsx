@@ -52,22 +52,22 @@ export default function Footer() {
               <h4>Contact</h4>
               <a href="mailto:hello@farmtotable.com" className="contact-link">
                 <Mail size={16} />
-                hello@farmtotable.com
+                ryan.biglou@farmtotable.com
               </a>
               <a href="tel:+15551234567" className="contact-link">
                 <Phone size={16} />
-                (555) 123-4567
+                (949) 545-4326
               </a>
               <span className="contact-link">
                 <MapPin size={16} />
-                Serving the Valley Region
+                Orange County, California
               </span>
             </div>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>© 2024 Farm To Table. All rights reserved.</p>
+          <p>© 2025 Farm To Table. All rights reserved.</p>
           <div className="footer-legal">
             <Link to="/privacy">Privacy Policy</Link>
             <Link to="/terms">Terms of Service</Link>
