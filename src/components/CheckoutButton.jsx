@@ -5,7 +5,7 @@ import { farms } from '../data/farms';
 
 // TEST KEY - Replace with your test publishable key from Stripe Dashboard
 // Go to: https://dashboard.stripe.com/test/apikeys
-const stripePromise = loadStripe('pk_test_YOUR_TEST_KEY_HERE');
+const stripePromise = loadStripe('pk_test_51SYuPCCmSjkcRVmD6IHoUvZzp8HOeYYzqbohqjPwqRMbxpBMxmzhfl4E9B3zQcZ0Lj2vMAxKKcXAYbxFRGEW8cBQ00aZfiOeSU');
 
 export default function CheckoutButton({ cart, cartTotal }) {
   const [loading, setLoading] = useState(false);
