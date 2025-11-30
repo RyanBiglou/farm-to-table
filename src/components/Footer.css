@@ -2,7 +2,7 @@
   position: relative;
   background: var(--forest-dark);
   color: var(--cream);
-  margin-top: var(--space-2xl);
+  margin-top: 10rem;
   overflow: hidden;
 }
 
