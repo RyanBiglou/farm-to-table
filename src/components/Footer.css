@@ -2,12 +2,12 @@
   position: relative;
   background: var(--forest-dark);
   color: var(--cream);
-  margin-top: 10rem;
+  margin-top: 0;
   overflow: hidden;
 }
 
 .footer-content {
-  padding-top: var(--space-2xl);
+  padding-top: 6rem;
   padding-bottom: var(--space-xl);
 }
 
