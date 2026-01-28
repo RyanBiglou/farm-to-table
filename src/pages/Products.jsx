@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, X, Leaf, Loader } from 'lucide-react';
+import { Search, X, Leaf, Loader, Filter } from 'lucide-react';
 import { useProducts } from '../hooks/useData';
 import { categories } from '../data/products';
 import ProductCard from '../components/ProductCard';
