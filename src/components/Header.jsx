@@ -1,13 +1,40 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBasket, Menu, X, Leaf } from 'lucide-react';
+import { ShoppingBasket, Menu, X, Leaf, User, LogOut, Settings, Package, ChevronDown } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import './Header.css';
 
 export default function Header() {
   const { cartCount } = useCart();
+  const { user, profile, signOut, isAuthenticated } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSignOut = async () => {
+    await signOut();
+    setUserMenuOpen(false);
+  };
+
+  const getUserInitial = () => {
+    if (profile?.full_name) return profile.full_name.charAt(0).toUpperCase();
+    if (user?.email) return user.email.charAt(0).toUpperCase();
+    return 'U';
+  };
 
   return (
     <header className="header">
@@ -48,6 +75,76 @@ export default function Header() {
             )}
           </Link>
 
+          {isAuthenticated ? (
+            <div className="user-menu-wrapper" ref={userMenuRef}>
+              <button 
+                className="user-menu-trigger"
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                aria-expanded={userMenuOpen}
+              >
+                <div className="user-avatar-small">
+                  {getUserInitial()}
+                </div>
+                <ChevronDown size={16} className={`chevron ${userMenuOpen ? 'open' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {userMenuOpen && (
+                  <motion.div 
+                    className="user-dropdown"
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <div className="dropdown-header">
+                      <span className="dropdown-name">{profile?.full_name || 'Welcome!'}</span>
+                      <span className="dropdown-email">{user?.email}</span>
+                    </div>
+                    <div className="dropdown-divider" />
+                    <Link 
+                      to="/account" 
+                      className="dropdown-item"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <User size={18} />
+                      My Account
+                    </Link>
+                    <Link 
+                      to="/account" 
+                      className="dropdown-item"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <Package size={18} />
+                      Orders
+                    </Link>
+                    <Link 
+                      to="/account" 
+                      className="dropdown-item"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <Settings size={18} />
+                      Settings
+                    </Link>
+                    <div className="dropdown-divider" />
+                    <button 
+                      className="dropdown-item signout"
+                      onClick={handleSignOut}
+                    >
+                      <LogOut size={18} />
+                      Sign Out
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <Link to="/login" className="login-button">
+              <User size={20} />
+              <span>Sign In</span>
+            </Link>
+          )}
+
           <button 
             className="mobile-menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -87,6 +184,35 @@ export default function Header() {
             >
               Shop
             </NavLink>
+            <div className="mobile-divider" />
+            {isAuthenticated ? (
+              <>
+                <NavLink 
+                  to="/account" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+                >
+                  My Account
+                </NavLink>
+                <button 
+                  className="nav-link signout-mobile"
+                  onClick={() => {
+                    handleSignOut();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <NavLink 
+                to="/login" 
+                onClick={() => setMobileMenuOpen(false)}
+                className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+              >
+                Sign In
+              </NavLink>
+            )}
           </motion.nav>
         )}
       </AnimatePresence>
