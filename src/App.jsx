@@ -3,6 +3,7 @@ import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import ScrollToTop from './components/ScrollToTop'
 import ZipCodeModal from './components/ZipCodeModal'
 import Home from './pages/Home'
 import Farms from './pages/Farms'
@@ -24,6 +25,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <div className="app">
+          <ScrollToTop />
           <ZipCodeModal />
           <Header />
           <main className="main">
