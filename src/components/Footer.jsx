@@ -36,8 +36,8 @@ export default function Footer() {
               <h4>Explore</h4>
               <Link to="/farms">Our Farms</Link>
               <Link to="/products">Shop Products</Link>
-              <a href="#">How It Works</a>
-              <a href="#">Become a Farm Partner</a>
+              <Link to="/how-it-works">How It Works</Link>
+              <Link to="/partner">Become a Farm Partner</Link>
             </div>
 
             <div className="footer-column">

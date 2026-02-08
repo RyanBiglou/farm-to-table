@@ -12,6 +12,8 @@ import Cart from './pages/Cart'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Account from './pages/Account'
+import HowItWorks from './pages/HowItWorks'
+import FarmPartner from './pages/FarmPartner'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import Terms from './pages/Terms'
 import CheckoutSuccess from './pages/CheckoutSuccess'
@@ -34,6 +36,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/account" element={<Account />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/partner" element={<FarmPartner />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/checkout-success" element={<CheckoutSuccess />} />

@@ -1,0 +1,390 @@
+.farm-partner-page {
+  min-height: 100vh;
+}
+
+/* Hero Section */
+.fp-hero {
+  background: linear-gradient(135deg, var(--forest) 0%, var(--forest-dark) 100%);
+  padding: var(--space-2xl) 0;
+  text-align: center;
+  color: var(--cream);
+}
+
+.fp-hero-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.fp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: var(--space-lg);
+}
+
+.fp-hero h1 {
+  color: var(--cream);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  margin-bottom: var(--space-md);
+}
+
+.fp-hero p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+/* Benefits Section */
+.fp-benefits {
+  padding: var(--space-2xl) 0;
+  background: var(--cream);
+}
+
+.fp-benefits .benefits-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.fp-benefits .benefits-header h2 {
+  margin-bottom: var(--space-sm);
+}
+
+.fp-benefits .benefits-header p {
+  color: var(--soil-light);
+  font-size: 1.1rem;
+}
+
+.fp-benefits .benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+}
+
+.fp-benefits .benefit-card {
+  background: var(--white);
+  padding: var(--space-xl);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.fp-benefits .benefit-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.fp-benefits .benefit-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--forest), var(--forest-light));
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cream);
+  margin-bottom: var(--space-md);
+}
+
+.fp-benefits .benefit-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: var(--space-sm);
+}
+
+.fp-benefits .benefit-card p {
+  color: var(--soil-light);
+  line-height: 1.5;
+}
+
+/* Process Section */
+.fp-process {
+  padding: var(--space-2xl) 0;
+  background: var(--white);
+}
+
+.process-content {
+  text-align: center;
+}
+
+.process-content h2 {
+  margin-bottom: var(--space-xl);
+}
+
+.process-steps {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.process-step {
+  flex: 1;
+  max-width: 200px;
+  text-align: center;
+}
+
+.step-num {
+  width: 48px;
+  height: 48px;
+  background: var(--forest);
+  color: var(--cream);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin: 0 auto var(--space-md);
+}
+
+.process-step h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: var(--space-xs);
+}
+
+.process-step p {
+  color: var(--soil-light);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.process-connector {
+  width: 60px;
+  height: 2px;
+  background: var(--cream-dark);
+  margin-top: 24px;
+  flex-shrink: 0;
+}
+
+/* Form Section */
+.fp-form-section {
+  padding: var(--space-2xl) 0;
+  background: var(--cream);
+}
+
+.form-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+.form-info h2 {
+  margin-bottom: var(--space-md);
+}
+
+.form-info > p {
+  color: var(--soil-light);
+  line-height: 1.6;
+  margin-bottom: var(--space-xl);
+}
+
+.requirements {
+  margin-bottom: var(--space-xl);
+}
+
+.requirements h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.requirements ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.requirements li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  color: var(--soil-light);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.requirements li svg {
+  color: var(--forest);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.contact-info h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.contact-info a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--forest);
+  margin-bottom: var(--space-sm);
+  font-weight: 500;
+}
+
+.contact-info a:hover {
+  color: var(--forest-dark);
+}
+
+/* Form Container */
+.form-container {
+  background: var(--white);
+  padding: var(--space-xl);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.partner-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+}
+
+.partner-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.partner-form label {
+  font-weight: 500;
+  color: var(--soil);
+  font-size: 0.95rem;
+}
+
+.partner-form input,
+.partner-form select,
+.partner-form textarea {
+  padding: var(--space-md);
+  font-size: 1rem;
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--radius-md);
+  background: var(--cream);
+  color: var(--soil);
+  transition: all var(--transition-fast);
+  font-family: var(--font-sans);
+}
+
+.partner-form input:focus,
+.partner-form select:focus,
+.partner-form textarea:focus {
+  outline: none;
+  border-color: var(--forest);
+  background: var(--white);
+}
+
+.partner-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon svg {
+  position: absolute;
+  left: var(--space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--soil-light);
+}
+
+.input-with-icon input {
+  padding-left: calc(var(--space-md) * 2 + 18px);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: var(--space-md) var(--space-lg);
+  font-size: 1.1rem;
+  margin-top: var(--space-sm);
+}
+
+/* Form Success */
+.form-success {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+}
+
+.form-success .success-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--forest);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cream);
+  margin: 0 auto var(--space-lg);
+}
+
+.form-success h3 {
+  margin-bottom: var(--space-md);
+}
+
+.form-success p {
+  color: var(--soil-light);
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .fp-benefits .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .process-steps {
+    flex-wrap: wrap;
+  }
+
+  .process-connector {
+    display: none;
+  }
+
+  .process-step {
+    flex-basis: calc(50% - var(--space-md));
+    margin-bottom: var(--space-lg);
+  }
+
+  .form-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .fp-hero {
+    padding: var(--space-xl) 0;
+  }
+
+  .fp-benefits .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .process-step {
+    flex-basis: 100%;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-container {
+    padding: var(--space-lg);
+  }
+}
