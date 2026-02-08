@@ -2,13 +2,14 @@
   position: relative;
   background: var(--forest-dark);
   color: var(--cream);
-  margin-top: 0;
+  margin-top: var(--space-2xl);
   overflow: hidden;
 }
 
 .footer-content {
   padding-top: 14rem;
   padding-bottom: var(--space-xl);
+  max-width: 1600px;
 }
 
 .footer-main {
