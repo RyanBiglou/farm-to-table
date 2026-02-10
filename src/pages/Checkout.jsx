@@ -21,6 +21,8 @@ export default function Checkout() {
       const items = cart.map(item => ({
         productId: item.id,
         quantity: item.quantity,
+        name: item.name,
+        price: item.price,
       }));
 
       const response = await fetch('/api/create-checkout-session', {

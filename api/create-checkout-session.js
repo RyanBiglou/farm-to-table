@@ -32,16 +32,13 @@ export default async function handler(req, res) {
 
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseKey) {
-    console.error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_ANON_KEY) must be set for checkout');
-    return res.status(500).json({ error: 'Checkout is not configured' });
-  }
+  const useSupabase = Boolean(supabaseUrl && supabaseKey);
 
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2023-10-16',
     });
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = useSupabase ? createClient(supabaseUrl, supabaseKey) : null;
 
     const { items } = req.body;
 
@@ -49,43 +46,60 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid or too many items' });
     }
 
-    // Require { productId, quantity } and resolve prices server-side to prevent tampering
-    const productIds = [...new Set(items.map(i => i.productId).filter(Boolean))];
-    if (productIds.length === 0) {
-      return res.status(400).json({ error: 'Each item must include productId' });
-    }
+    let lineItems = [];
 
-    const { data: products, error: productsError } = await supabase
-      .from('products')
-      .select('id, name, price, in_stock')
-      .in('id', productIds);
-
-    if (productsError || !products?.length) {
-      return res.status(400).json({ error: 'Invalid products' });
-    }
-
-    const productMap = Object.fromEntries(products.map(p => [p.id, p]));
-    const lineItems = [];
-    for (const item of items) {
-      const productId = Number(item.productId);
-      const product = productMap[productId];
-      if (!product) continue;
-      const qty = Math.min(MAX_QUANTITY, Math.max(1, parseInt(item.quantity, 10) || 1));
-      if (product.in_stock === false) continue;
-      const priceCents = Math.round(Number(product.price) * 100);
-      if (!Number.isFinite(priceCents) || priceCents < 1) continue;
-      lineItems.push({
-        price_data: {
-          currency: 'usd',
-          product_data: { name: String(product.name).slice(0, 500) },
-          unit_amount: priceCents,
-        },
-        quantity: qty,
-      });
+    if (useSupabase) {
+      // Prefer server-side price lookup by productId (secure)
+      const productIds = [...new Set(items.map(i => i.productId).filter(Boolean))];
+      if (productIds.length === 0) {
+        return res.status(400).json({ error: 'Each item must include productId' });
+      }
+      const { data: products, error: productsError } = await supabase
+        .from('products')
+        .select('id, name, price, in_stock')
+        .in('id', productIds);
+      if (productsError || !products?.length) {
+        return res.status(400).json({ error: 'Invalid products' });
+      }
+      const productMap = Object.fromEntries(products.map(p => [p.id, p]));
+      for (const item of items) {
+        const productId = Number(item.productId);
+        const product = productMap[productId];
+        if (!product) continue;
+        const qty = Math.min(MAX_QUANTITY, Math.max(1, parseInt(item.quantity, 10) || 1));
+        if (product.in_stock === false) continue;
+        const priceCents = Math.round(Number(product.price) * 100);
+        if (!Number.isFinite(priceCents) || priceCents < 1) continue;
+        lineItems.push({
+          price_data: {
+            currency: 'usd',
+            product_data: { name: String(product.name).slice(0, 500) },
+            unit_amount: priceCents,
+          },
+          quantity: qty,
+        });
+      }
+    } else {
+      // Fallback when Supabase not set on server: use name/price from request with strict validation
+      for (const item of items) {
+        const name = item.name != null ? String(item.name).trim().slice(0, 200) : '';
+        const price = Number(item.price);
+        const qty = Math.min(MAX_QUANTITY, Math.max(1, parseInt(item.quantity, 10) || 1));
+        if (!name) continue;
+        if (!Number.isFinite(price) || price < 0.01 || price > 9999.99) continue;
+        lineItems.push({
+          price_data: {
+            currency: 'usd',
+            product_data: { name: name || 'Item' },
+            unit_amount: Math.round(price * 100),
+          },
+          quantity: qty,
+        });
+      }
     }
 
     if (lineItems.length === 0) {
-      return res.status(400).json({ error: 'No valid line items' });
+      return res.status(400).json({ error: useSupabase ? 'No valid line items' : 'No valid items (need name and price 0.01–9999.99)' });
     }
 
     const origin = (req.headers.origin && ALLOWED_ORIGINS.includes(req.headers.origin))
