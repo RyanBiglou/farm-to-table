@@ -44,15 +44,40 @@ export default function Checkout() {
           farmName: getFarmName(item.farmId)
         }));
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
         const response = await fetch('/api/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items })
+          body: JSON.stringify({ items }),
+          signal: controller.signal
         });
 
-        const data = await response.json();
+        clearTimeout(timeoutId);
 
         if (!mounted) return;
+
+        if (!response.ok) {
+          const text = await response.text();
+          let errMsg = `Checkout service error (${response.status})`;
+          try {
+            const json = JSON.parse(text);
+            if (json.error) errMsg = json.error;
+          } catch (_) {}
+          setError(errMsg);
+          setStatus('error');
+          return;
+        }
+
+        let data;
+        try {
+          data = await response.json();
+        } catch (_) {
+          setError('Invalid response from server');
+          setStatus('error');
+          return;
+        }
 
         if (data.error) {
           setError(data.error);
@@ -73,6 +98,12 @@ export default function Checkout() {
           return;
         }
 
+        if (typeof stripe.initEmbeddedCheckout !== 'function') {
+          setError('Embedded checkout is not supported in this environment. Try updating @stripe/stripe-js.');
+          setStatus('error');
+          return;
+        }
+
         const embeddedCheckout = await stripe.initEmbeddedCheckout({
           clientSecret: data.clientSecret
         });
@@ -83,7 +114,11 @@ export default function Checkout() {
         setStatus('ready');
       } catch (err) {
         if (mounted) {
-          setError(err.message || 'Checkout failed');
+          if (err.name === 'AbortError') {
+            setError('Request timed out. Check your connection or try again.');
+          } else {
+            setError(err.message || 'Checkout failed');
+          }
           setStatus('error');
         }
       }
