@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const MAX_ITEMS = 50;
 const MAX_QUANTITY = 99;
+const SUPABASE_QUERY_TIMEOUT = 4000; // ms — must finish before Vercel's 10s function timeout
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,https://farm-to-tablevercel.vercel.app').split(',').map(s => s.trim());
 
 function getCorsOrigin(req) {
@@ -47,40 +48,54 @@ export default async function handler(req, res) {
     }
 
     let lineItems = [];
+    let usedSupabase = false;
 
+    // Try Supabase for server-side price lookup (secure), but with a timeout
+    // so the function doesn't hang if the DB is waking from hibernation
     if (useSupabase) {
-      // Prefer server-side price lookup by productId (secure)
-      const productIds = [...new Set(items.map(i => i.productId).filter(Boolean))];
-      if (productIds.length === 0) {
-        return res.status(400).json({ error: 'Each item must include productId' });
+      try {
+        const productIds = [...new Set(items.map(i => i.productId).filter(Boolean))];
+        if (productIds.length > 0) {
+          const queryPromise = supabase
+            .from('products')
+            .select('id, name, price, in_stock')
+            .in('id', productIds);
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Supabase query timeout')), SUPABASE_QUERY_TIMEOUT)
+          );
+
+          const { data: products, error: productsError } = await Promise.race([queryPromise, timeoutPromise]);
+
+          if (!productsError && products?.length) {
+            usedSupabase = true;
+            const productMap = Object.fromEntries(products.map(p => [p.id, p]));
+            for (const item of items) {
+              const productId = Number(item.productId);
+              const product = productMap[productId];
+              if (!product) continue;
+              const qty = Math.min(MAX_QUANTITY, Math.max(1, parseInt(item.quantity, 10) || 1));
+              if (product.in_stock === false) continue;
+              const priceCents = Math.round(Number(product.price) * 100);
+              if (!Number.isFinite(priceCents) || priceCents < 1) continue;
+              lineItems.push({
+                price_data: {
+                  currency: 'usd',
+                  product_data: { name: String(product.name).slice(0, 500) },
+                  unit_amount: priceCents,
+                },
+                quantity: qty,
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Supabase lookup failed/timed out, falling back to client data:', err.message);
       }
-      const { data: products, error: productsError } = await supabase
-        .from('products')
-        .select('id, name, price, in_stock')
-        .in('id', productIds);
-      if (productsError || !products?.length) {
-        return res.status(400).json({ error: 'Invalid products' });
-      }
-      const productMap = Object.fromEntries(products.map(p => [p.id, p]));
-      for (const item of items) {
-        const productId = Number(item.productId);
-        const product = productMap[productId];
-        if (!product) continue;
-        const qty = Math.min(MAX_QUANTITY, Math.max(1, parseInt(item.quantity, 10) || 1));
-        if (product.in_stock === false) continue;
-        const priceCents = Math.round(Number(product.price) * 100);
-        if (!Number.isFinite(priceCents) || priceCents < 1) continue;
-        lineItems.push({
-          price_data: {
-            currency: 'usd',
-            product_data: { name: String(product.name).slice(0, 500) },
-            unit_amount: priceCents,
-          },
-          quantity: qty,
-        });
-      }
-    } else {
-      // Fallback when Supabase not set on server: use name/price from request with strict validation
+    }
+
+    // Fallback: use name/price from request (when Supabase is unavailable or slow)
+    if (!usedSupabase || lineItems.length === 0) {
+      lineItems = [];
       for (const item of items) {
         const name = item.name != null ? String(item.name).trim().slice(0, 200) : '';
         const price = Number(item.price);
@@ -90,7 +105,7 @@ export default async function handler(req, res) {
         lineItems.push({
           price_data: {
             currency: 'usd',
-            product_data: { name: name || 'Item' },
+            product_data: { name },
             unit_amount: Math.round(price * 100),
           },
           quantity: qty,
@@ -99,7 +114,7 @@ export default async function handler(req, res) {
     }
 
     if (lineItems.length === 0) {
-      return res.status(400).json({ error: useSupabase ? 'No valid line items' : 'No valid items (need name and price 0.01–9999.99)' });
+      return res.status(400).json({ error: 'No valid line items' });
     }
 
     const origin = (req.headers.origin && ALLOWED_ORIGINS.includes(req.headers.origin))

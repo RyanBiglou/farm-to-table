@@ -3,6 +3,15 @@ import { getFarms, getProducts, getFarmById as fetchFarmById, getProductsByFarmI
 import { farms as staticFarms } from '../data/farms';
 import { products as staticProducts } from '../data/products';
 
+const FETCH_TIMEOUT = 6000; // ms — fall back to static data if Supabase is slow
+
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms)),
+  ]);
+}
+
 // Hook to fetch all farms
 export function useFarms() {
   const [farms, setFarms] = useState(staticFarms);
@@ -12,7 +21,7 @@ export function useFarms() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getFarms();
+        const data = await withTimeout(getFarms(), FETCH_TIMEOUT);
         if (data) {
           setFarms(data);
         }
@@ -40,7 +49,7 @@ export function useFarm(id) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await fetchFarmById(id);
+        const data = await withTimeout(fetchFarmById(id), FETCH_TIMEOUT);
         if (data) {
           setFarm(data);
         }
@@ -66,7 +75,7 @@ export function useProducts() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getProducts();
+        const data = await withTimeout(getProducts(), FETCH_TIMEOUT);
         if (data) {
           setProducts(data);
         }
@@ -94,7 +103,7 @@ export function useFarmProducts(farmId) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await fetchProductsByFarmId(farmId);
+        const data = await withTimeout(fetchProductsByFarmId(farmId), FETCH_TIMEOUT);
         if (data) {
           setProducts(data);
         }

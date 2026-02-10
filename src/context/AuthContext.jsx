@@ -11,13 +11,20 @@ export const useAuth = () => {
   return context;
 };
 
+  // Race a promise against a timeout (prevents any Supabase call from hanging forever)
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms)),
+    ]);
+  }
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session and validate it
     const initSession = async () => {
       if (!supabase) {
         setLoading(false);
@@ -28,27 +35,32 @@ export function AuthProvider({ children }) {
         const { data: { session } } = await supabase.auth.getSession();
 
         if (session) {
-          // Validate session with a network call — if the token is expired/invalid
-          // this will fail and we clear the stale session instead of leaving the app stuck
-          const { data: { user: validUser }, error: userError } = await supabase.auth.getUser();
+          // Validate with a network call, but don't let it hang the whole app
+          try {
+            const { data: { user: validUser }, error: userError } =
+              await withTimeout(supabase.auth.getUser(), 5000);
 
-          if (userError || !validUser) {
-            console.warn('Stale session detected, signing out locally');
-            await supabase.auth.signOut({ scope: 'local' });
-            setUser(null);
-            setProfile(null);
-            setLoading(false);
-            return;
+            if (userError || !validUser) {
+              console.warn('Stale session detected, signing out locally');
+              await supabase.auth.signOut({ scope: 'local' });
+              setUser(null);
+              setProfile(null);
+              setLoading(false);
+              return;
+            }
+
+            setUser(validUser);
+            await withTimeout(fetchProfile(validUser.id), 5000).catch(() => {});
+          } catch {
+            // getUser timed out — use the local session so pages aren't stuck
+            console.warn('Session validation timed out, using local session');
+            setUser(session.user);
           }
-
-          setUser(validUser);
-          await fetchProfile(validUser.id);
         } else {
           setUser(null);
         }
       } catch (err) {
         console.error('Session init error:', err);
-        // If anything goes wrong, clear auth state so the app isn't stuck
         try { await supabase.auth.signOut({ scope: 'local' }); } catch (_) {}
         setUser(null);
         setProfile(null);
@@ -63,18 +75,13 @@ export function AuthProvider({ children }) {
     if (supabase) {
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
-          if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
-            setUser(session?.user ?? null);
-            if (session?.user) {
-              await fetchProfile(session.user.id);
-            }
-          } else if (event === 'SIGNED_OUT') {
+          if (event === 'SIGNED_OUT') {
             setUser(null);
             setProfile(null);
           } else {
             setUser(session?.user ?? null);
             if (session?.user) {
-              await fetchProfile(session.user.id);
+              fetchProfile(session.user.id).catch(() => {});
             } else {
               setProfile(null);
             }
