@@ -264,9 +264,7 @@
 .dropdown-divider {
   height: 1px;
   background: var(--cream-dark);
-}
-
-.dropdown-item {
+}.dropdown-item {
   display: flex;
   align-items: center;
   gap: var(--space-sm);

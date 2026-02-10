@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import { ArrowLeft, Loader } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -13,8 +14,6 @@ export default function Checkout() {
   const navigate = useNavigate();
   const { cart } = useCart();
   const { isAuthenticated } = useAuth();
-  const containerRef = useRef(null);
-  const [status, setStatus] = useState('loading'); // 'loading' | 'ready' | 'error'
   const [error, setError] = useState('');
 
   const getFarmName = (farmId) => {
@@ -22,114 +21,54 @@ export default function Checkout() {
     return farm?.name || 'Local Farm';
   };
 
+  // Stripe calls this to get the client secret (per Stripe embedded quickstart)
+  const fetchClientSecret = useCallback(async () => {
+    try {
+      const items = cart.map(item => ({
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        farmName: getFarmName(item.farmId)
+      }));
+
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const msg = data.error || `Checkout service error (${response.status})`;
+        setError(msg);
+        throw new Error(msg);
+      }
+      if (data.error) {
+        setError(data.error);
+        throw new Error(data.error);
+      }
+      if (!data.clientSecret) {
+        setError('Invalid response from server');
+        throw new Error('Invalid response from server');
+      }
+
+      return data.clientSecret;
+    } catch (err) {
+      if (err.message) setError(err.message);
+      throw err;
+    }
+  }, [cart]);
+
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: { pathname: '/checkout' } } }, { replace: true });
       return;
     }
-
     if (!cart.length) {
       navigate('/cart', { replace: true });
-      return;
     }
-
-    let mounted = true;
-
-    const initEmbeddedCheckout = async () => {
-      try {
-        const items = cart.map(item => ({
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          farmName: getFarmName(item.farmId)
-        }));
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-        const response = await fetch('/api/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items }),
-          signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!mounted) return;
-
-        if (!response.ok) {
-          const text = await response.text();
-          let errMsg = `Checkout service error (${response.status})`;
-          try {
-            const json = JSON.parse(text);
-            if (json.error) errMsg = json.error;
-          } catch (_) {}
-          setError(errMsg);
-          setStatus('error');
-          return;
-        }
-
-        let data;
-        try {
-          data = await response.json();
-        } catch (_) {
-          setError('Invalid response from server');
-          setStatus('error');
-          return;
-        }
-
-        if (data.error) {
-          setError(data.error);
-          setStatus('error');
-          return;
-        }
-
-        if (!data.clientSecret) {
-          setError('Invalid response from server');
-          setStatus('error');
-          return;
-        }
-
-        const stripe = await stripePromise;
-        if (!stripe) {
-          setError('Stripe failed to load');
-          setStatus('error');
-          return;
-        }
-
-        if (typeof stripe.initEmbeddedCheckout !== 'function') {
-          setError('Embedded checkout is not supported in this environment. Try updating @stripe/stripe-js.');
-          setStatus('error');
-          return;
-        }
-
-        const embeddedCheckout = await stripe.initEmbeddedCheckout({
-          clientSecret: data.clientSecret
-        });
-
-        if (!mounted || !containerRef.current) return;
-
-        embeddedCheckout.mount(containerRef.current);
-        setStatus('ready');
-      } catch (err) {
-        if (mounted) {
-          if (err.name === 'AbortError') {
-            setError('Request timed out. Check your connection or try again.');
-          } else {
-            setError(err.message || 'Checkout failed');
-          }
-          setStatus('error');
-        }
-      }
-    };
-
-    initEmbeddedCheckout();
-
-    return () => {
-      mounted = false;
-    };
-  }, [cart, isAuthenticated, navigate]);
+  }, [isAuthenticated, cart.length, navigate]);
 
   if (!isAuthenticated || !cart.length) {
     return null;
@@ -145,25 +84,21 @@ export default function Checkout() {
 
         <div className="checkout-header">
           <h1>Checkout</h1>
-          <p>Complete your order below. You’ll stay on this page to pay.</p>
+          <p>Complete your order below. You'll stay on this page to pay.</p>
         </div>
 
-        {status === 'loading' && (
-          <div className="checkout-loading">
-            <Loader size={40} className="spinner" />
-            <p>Loading checkout…</p>
-          </div>
-        )}
-
-        {status === 'error' && (
+        {error ? (
           <div className="checkout-error">
             <p>{error}</p>
             <Link to="/cart" className="btn btn-primary">Return to cart</Link>
           </div>
-        )}
-
-        {status === 'ready' && (
-          <div ref={containerRef} id="embedded-checkout" className="embedded-checkout-container" />
+        ) : (
+          <EmbeddedCheckoutProvider
+            stripe={stripePromise}
+            options={{ fetchClientSecret }}
+          >
+            <EmbeddedCheckout />
+          </EmbeddedCheckoutProvider>
         )}
       </div>
     </div>
