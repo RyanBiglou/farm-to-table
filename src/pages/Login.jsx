@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, Leaf, AlertCircle, ArrowRight } from 'lucide-react';
@@ -8,7 +8,7 @@ import './Auth.css';
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, resetPassword } = useAuth();
+  const { signIn, resetPassword, isAuthenticated } = useAuth();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +19,13 @@ export default function Login() {
   const [showResetForm, setShowResetForm] = useState(false);
 
   const from = location.state?.from?.pathname || '/';
+
+  // If already authenticated, redirect away from login
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, from, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +38,10 @@ export default function Login() {
       setError(error.message);
       setLoading(false);
     } else {
+      // Navigate immediately; the useEffect above is a safety net
+      // in case this fires before auth state updates
       navigate(from, { replace: true });
+      setLoading(false);
     }
   };
 

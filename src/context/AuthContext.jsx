@@ -17,35 +17,67 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    const getSession = async () => {
+    // Get initial session and validate it
+    const initSession = async () => {
       if (!supabase) {
         setLoading(false);
         return;
       }
 
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        await fetchProfile(session.user.id);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+          // Validate session with a network call — if the token is expired/invalid
+          // this will fail and we clear the stale session instead of leaving the app stuck
+          const { data: { user: validUser }, error: userError } = await supabase.auth.getUser();
+
+          if (userError || !validUser) {
+            console.warn('Stale session detected, signing out locally');
+            await supabase.auth.signOut({ scope: 'local' });
+            setUser(null);
+            setProfile(null);
+            setLoading(false);
+            return;
+          }
+
+          setUser(validUser);
+          await fetchProfile(validUser.id);
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.error('Session init error:', err);
+        // If anything goes wrong, clear auth state so the app isn't stuck
+        try { await supabase.auth.signOut({ scope: 'local' }); } catch (_) {}
+        setUser(null);
+        setProfile(null);
       }
-      
+
       setLoading(false);
     };
 
-    getSession();
+    initSession();
 
-    // Listen for auth changes
+    // Listen for auth changes (token refresh, sign in/out, etc.)
     if (supabase) {
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
-          setUser(session?.user ?? null);
-          
-          if (session?.user) {
-            await fetchProfile(session.user.id);
-          } else {
+          if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+            setUser(session?.user ?? null);
+            if (session?.user) {
+              await fetchProfile(session.user.id);
+            }
+          } else if (event === 'SIGNED_OUT') {
+            setUser(null);
             setProfile(null);
+          } else {
+            setUser(session?.user ?? null);
+            if (session?.user) {
+              await fetchProfile(session.user.id);
+            } else {
+              setProfile(null);
+            }
           }
         }
       );
@@ -112,13 +144,17 @@ export function AuthProvider({ children }) {
 
   const signOut = async () => {
     if (!supabase) return;
-    
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      setUser(null);
-      setProfile(null);
+
+    // Always clear local state, even if the server call fails (e.g. expired token)
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.warn('Sign-out API failed, clearing locally:', err);
+      try { await supabase.auth.signOut({ scope: 'local' }); } catch (_) {}
     }
-    return { error };
+    setUser(null);
+    setProfile(null);
+    return { error: null };
   };
 
   const resetPassword = async (email) => {
