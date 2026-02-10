@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Plus, Minus, ShoppingBasket, ArrowLeft, ArrowRight, Truck, ShieldCheck } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBasket, ArrowLeft, ArrowRight, Truck, ShieldCheck, LogIn } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { farms } from '../data/farms';
 import CheckoutButton from '../components/CheckoutButton';
 import './Cart.css';
 
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
+  const { isAuthenticated } = useAuth();
 
   if (cart.length === 0) {
     return (
@@ -146,8 +148,18 @@ export default function Cart() {
                 <span>Total</span>
                 <span>${(cartTotal * 1.08).toFixed(2)}</span>
               </div>
-              
-              <CheckoutButton cart={cart} cartTotal={cartTotal} />
+
+              {!isAuthenticated ? (
+                <div className="checkout-signin-prompt">
+                  <p>Please sign in to proceed to checkout.</p>
+                  <Link to="/login" state={{ from: { pathname: '/cart' } }} className="btn btn-primary checkout-btn">
+                    <LogIn size={18} />
+                    Sign In to Checkout
+                  </Link>
+                </div>
+              ) : (
+                <CheckoutButton cart={cart} cartTotal={cartTotal} />
+              )}
               
               <button className="clear-cart" onClick={clearCart}>
                 Clear Cart
