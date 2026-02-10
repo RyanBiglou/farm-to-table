@@ -4,7 +4,6 @@ import { Trash2, Plus, Minus, ShoppingBasket, ArrowLeft, ArrowRight, Truck, Shie
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { farms } from '../data/farms';
-import CheckoutButton from '../components/CheckoutButton';
 import './Cart.css';
 
 export default function Cart() {
@@ -158,7 +157,10 @@ export default function Cart() {
                   </Link>
                 </div>
               ) : (
-                <CheckoutButton cart={cart} cartTotal={cartTotal} />
+                <Link to="/checkout" className="btn btn-primary checkout-btn">
+                  Proceed to Checkout
+                  <ArrowRight size={18} />
+                </Link>
               )}
               
               <button className="clear-cart" onClick={clearCart}>

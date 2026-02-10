@@ -17,6 +17,7 @@ import HowItWorks from './pages/HowItWorks'
 import FarmPartner from './pages/FarmPartner'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import Terms from './pages/Terms'
+import Checkout from './pages/Checkout'
 import CheckoutSuccess from './pages/CheckoutSuccess'
 import './styles/App.css'
 
@@ -42,6 +43,7 @@ function App() {
               <Route path="/partner" element={<FarmPartner />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/checkout" element={<Checkout />} />
               <Route path="/checkout-success" element={<CheckoutSuccess />} />
             </Routes>
           </main>

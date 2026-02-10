@@ -49,16 +49,16 @@ export default async function handler(req, res) {
     // Get the origin for redirect URLs
     const origin = req.headers.origin || 'https://farm-to-tablevercel.vercel.app';
 
-    // Create the checkout session
+    // Create embedded checkout session (stays on your site)
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${origin}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/cart`,
+      ui_mode: 'embedded',
+      return_url: `${origin}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
     });
 
-    return res.status(200).json({ sessionId: session.id, url: session.url });
+    return res.status(200).json({ clientSecret: session.client_secret });
   } catch (error) {
     console.error('Stripe error:', error);
     return res.status(500).json({ error: error.message });

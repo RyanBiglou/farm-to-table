@@ -1,0 +1,67 @@
+.checkout-page {
+  padding: var(--space-2xl) 0;
+  min-height: 60vh;
+}
+
+.checkout-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--soil-light);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-lg);
+  transition: color var(--transition-fast);
+}
+
+.checkout-back:hover {
+  color: var(--forest);
+}
+
+.checkout-header {
+  margin-bottom: var(--space-xl);
+}
+
+.checkout-header h1 {
+  margin-bottom: var(--space-xs);
+}
+
+.checkout-header p {
+  color: var(--soil-light);
+}
+
+.checkout-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  gap: var(--space-md);
+  color: var(--soil-light);
+}
+
+.checkout-loading .spinner {
+  animation: spin 1s linear infinite;
+  color: var(--forest);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.checkout-error {
+  text-align: center;
+  padding: var(--space-2xl);
+  background: rgba(196, 112, 75, 0.1);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(196, 112, 75, 0.3);
+}
+
+.checkout-error p {
+  color: var(--terracotta);
+  margin-bottom: var(--space-lg);
+}
+
+.embedded-checkout-container {
+  max-width: 640px;
+  min-height: 400px;
+}
