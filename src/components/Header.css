@@ -259,9 +259,7 @@
   font-size: 0.85rem;
   color: var(--soil-light);
   word-break: break-all;
-}
-
-.dropdown-divider {
+}.dropdown-divider {
   height: 1px;
   background: var(--cream-dark);
 }.dropdown-item {

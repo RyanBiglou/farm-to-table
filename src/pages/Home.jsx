@@ -234,33 +234,63 @@ export default function Home() {
       {/* Testimonial Section */}
       <section className="testimonial-section">
         <div className="container">
-          <motion.div 
-            className="testimonial"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="testimonial-stars">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={24} fill="var(--golden)" stroke="var(--golden)" />
-              ))}
-            </div>
-            <blockquote>
-              "The quality is unmatched. I can taste the difference in every bite. 
-              My kids now actually <em>ask</em> for vegetables! Plus, knowing I'm supporting 
-              local families makes every meal feel special."
-            </blockquote>
-            <div className="testimonial-author">
-              <div className="author-avatar">
-                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="" />
+          <div className="testimonial-grid">
+            <motion.div 
+              className="testimonial"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="testimonial-stars">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={24} fill="var(--golden)" stroke="var(--golden)" />
+                ))}
               </div>
-              <div className="author-info">
-                <span className="author-name">Emily Richardson</span>
-                <span className="author-title">Home Chef & Mom of 3</span>
+              <blockquote>
+                "The quality is unmatched. I can taste the difference in every bite. 
+                My kids now actually <em>ask</em> for vegetables! Plus, knowing I'm supporting 
+                local families makes every meal feel special."
+              </blockquote>
+              <div className="testimonial-author">
+                <div className="author-avatar">
+                  <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="" />
+                </div>
+                <div className="author-info">
+                  <span className="author-name">Kaya Woo</span>
+                  <span className="author-title">Home Chef</span>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            <motion.div 
+              className="testimonial"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+            >
+              <div className="testimonial-stars">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={24} fill="var(--golden)" stroke="var(--golden)" />
+                ))}
+              </div>
+              <blockquote>
+                "I love knowing exactly where my food comes from. The freshness is incredible — 
+                you can really <em>tell</em> the difference. It's like having a farmer's market 
+                delivered right to my door every week."
+              </blockquote>
+              <div className="testimonial-author">
+                <div className="author-avatar">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" alt="" />
+                </div>
+                <div className="author-info">
+                  <span className="author-name">James Carter</span>
+                  <span className="author-title">Food Enthusiast</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
