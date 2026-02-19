@@ -11,8 +11,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: var(--space-md);
-  padding-bottom: var(--space-md);
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-lg);
   max-width: 1600px;
 }
 
