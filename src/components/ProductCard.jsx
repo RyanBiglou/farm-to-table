@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Check, Leaf } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import { farms } from '../data/farms';
+import { useFarms } from '../hooks/useData';
 import './ProductCard.css';
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
+  const { farms } = useFarms();
   const farm = farms.find(f => f.id === product.farmId);
 
   const handleAddToCart = () => {

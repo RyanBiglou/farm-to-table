@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, X, Leaf, Loader, Filter } from 'lucide-react';
 import { useProducts } from '../hooks/useData';
-import { categories } from '../data/products';
 import ProductCard from '../components/ProductCard';
+
+const categories = ['All', 'Vegetables', 'Fruits', 'Dairy & Eggs', 'Meat', 'Pantry', 'Beverages', 'Home'];
 import './Products.css';
 
 const fadeInUp = {

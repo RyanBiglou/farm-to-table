@@ -3,12 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Plus, Minus, ShoppingBasket, ArrowLeft, ArrowRight, Truck, ShieldCheck, LogIn } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { farms } from '../data/farms';
+import { useFarms } from '../hooks/useData';
 import './Cart.css';
 
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
   const { isAuthenticated } = useAuth();
+  const { farms } = useFarms();
 
   if (cart.length === 0) {
     return (
