@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   User, Mail, Phone, MapPin, Package, Heart, Settings, 
@@ -7,16 +7,24 @@ import {
   ShoppingBag, Clock
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { getOrdersByUserId } from '../lib/supabase';
 import './Account.css';
+
+const VALID_TABS = ['profile', 'orders', 'favorites', 'settings'];
 
 export default function Account() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, profile, signOut, updateProfile, loading } = useAuth();
   
-  const [activeTab, setActiveTab] = useState('profile');
+  const tabFromUrl = searchParams.get('tab');
+  const initialTab = tabFromUrl && VALID_TABS.includes(tabFromUrl) ? tabFromUrl : 'profile';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
   
   const [formData, setFormData] = useState({
     full_name: profile?.full_name || '',
@@ -68,6 +76,29 @@ export default function Account() {
     navigate('/');
   };
 
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && VALID_TABS.includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (activeTab === 'orders' && user?.id) {
+      setOrdersLoading(true);
+      getOrdersByUserId(user.id).then((data) => {
+        setOrders(data);
+        setOrdersLoading(false);
+      }).catch(() => setOrdersLoading(false));
+    }
+  }, [activeTab, user?.id]);
+
+  const formatOrderDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  };
+
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'orders', label: 'Orders', icon: Package },
@@ -88,7 +119,7 @@ export default function Account() {
           <aside className="account-sidebar">
             <div className="account-user">
               <div className="user-avatar">
-                {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase()}
+                <User size={28} />
               </div>
               <div className="user-info">
                 <h3>{profile?.full_name || 'Welcome!'}</h3>
@@ -101,7 +132,10 @@ export default function Account() {
                 <button
                   key={tab.id}
                   className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setSearchParams(tab.id === 'profile' ? {} : { tab: tab.id });
+                  }}
                 >
                   <tab.icon size={20} />
                   {tab.label}
@@ -277,16 +311,46 @@ export default function Account() {
                   <h2>Order History</h2>
                 </div>
                 
-                <div className="empty-state">
-                  <div className="empty-icon">
-                    <ShoppingBag size={48} />
+                {ordersLoading ? (
+                  <div className="loading-state">Loading orders...</div>
+                ) : orders.length > 0 ? (
+                  <div className="orders-list">
+                    {orders.map((order) => (
+                      <div key={order.id} className="order-card">
+                        <div className="order-card-header">
+                          <div>
+                            <span className="order-id">Order #{order.id}</span>
+                            <span className="order-date">{formatOrderDate(order.createdAt)}</span>
+                          </div>
+                          <span className={`order-status status-${order.status}`}>{order.status}</span>
+                        </div>
+                        <div className="order-card-items">
+                          {order.items?.map((item, i) => (
+                            <div key={i} className="order-item">
+                              <span className="order-item-name">{item.product_name}</span>
+                              <span className="order-item-qty">× {item.quantity}</span>
+                              <span className="order-item-price">${(item.price || 0).toFixed(2)}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="order-card-footer">
+                          <strong>Total: ${(order.total || 0).toFixed(2)}</strong>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <h3>No orders yet</h3>
-                  <p>When you place orders, they'll appear here.</p>
-                  <Link to="/products" className="btn btn-primary">
-                    Start Shopping
-                  </Link>
-                </div>
+                ) : (
+                  <div className="empty-state">
+                    <div className="empty-icon">
+                      <ShoppingBag size={48} />
+                    </div>
+                    <h3>No orders yet</h3>
+                    <p>When you place orders, they'll appear here.</p>
+                    <Link to="/products" className="btn btn-primary">
+                      Start Shopping
+                    </Link>
+                  </div>
+                )}
               </section>
             )}
 

@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   const corsOrigin = process.env.NODE_ENV === 'production' ? getCorsOrigin(req) : (req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Origin', corsOrigin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
     });
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { items } = req.body;
+    const { items, customer_email, customer_name } = req.body;
 
     if (!Array.isArray(items) || items.length === 0 || items.length > MAX_ITEMS) {
       return res.status(400).json({ error: 'Invalid or too many items' });
@@ -90,13 +90,16 @@ export default async function handler(req, res) {
     const origin = (req.headers.origin && ALLOWED_ORIGINS.includes(req.headers.origin))
       ? req.headers.origin
       : (ALLOWED_ORIGINS[0] || 'https://farm-to-tablevercel.vercel.app');
-    const session = await stripe.checkout.sessions.create({
+    const sessionConfig = {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
       ui_mode: 'embedded',
       return_url: `${origin}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-    });
+    };
+    if (customer_email) sessionConfig.customer_email = customer_email;
+    if (customer_name) sessionConfig.customer_details = { name: customer_name };
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return res.status(200).json({ clientSecret: session.client_secret });
   } catch (error) {

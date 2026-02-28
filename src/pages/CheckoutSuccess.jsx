@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CheckCircle, Package, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { supabase } from '../lib/supabase';
 import './CheckoutSuccess.css';
 
 export default function CheckoutSuccess() {
@@ -10,11 +11,31 @@ export default function CheckoutSuccess() {
   const sessionId = searchParams.get('session_id');
   const { clearCart } = useCart();
 
-  // Clear the cart after successful checkout
+  // Clear the cart and save order to database after successful checkout
   useEffect(() => {
-    if (sessionId) {
-      clearCart();
-    }
+    if (!sessionId) return;
+    clearCart();
+
+    const saveOrder = async () => {
+      if (!supabase) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) return;
+
+      try {
+        const base = import.meta.env.VITE_API_BASE || '';
+        await fetch(`${base}/api/create-order-from-session`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ session_id: sessionId }),
+        });
+      } catch (err) {
+        console.warn('Could not save order:', err);
+      }
+    };
+    saveOrder();
   }, [sessionId, clearCart]);
 
   return (

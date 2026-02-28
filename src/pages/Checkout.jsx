@@ -13,7 +13,7 @@ const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : 
 export default function Checkout() {
   const navigate = useNavigate();
   const { cart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, profile } = useAuth();
   const [error, setError] = useState('');
 
   // Stripe calls this to get the client secret; API resolves prices server-side from product IDs
@@ -24,13 +24,17 @@ export default function Checkout() {
         quantity: item.quantity,
       }));
 
+      const body = { items };
+      if (user?.email) body.customer_email = user.email;
+      if (profile?.full_name) body.customer_name = profile.full_name;
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify(body),
         signal: controller.signal,
       });
 
@@ -61,7 +65,7 @@ export default function Checkout() {
       setError(msg);
       throw err;
     }
-  }, [cart]);
+  }, [cart, user, profile]);
 
   useEffect(() => {
     if (!isAuthenticated) {

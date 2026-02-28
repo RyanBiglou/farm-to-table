@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Truck, Heart, Leaf, Star, MapPin } from 'lucide-react';
+import { ArrowRight, Leaf, Star, MapPin, Truck, Heart } from 'lucide-react';
 import { useFarms, useProducts } from '../hooks/useData';
 import ProductCard from '../components/ProductCard';
 import FarmCard from '../components/FarmCard';
@@ -33,7 +33,6 @@ export default function Home() {
       <section className="hero">
         <div className="hero-bg">
           <div className="hero-gradient"></div>
-          <div className="hero-pattern"></div>
         </div>
         
         <div className="hero-content container">
@@ -62,103 +61,85 @@ export default function Home() {
               </Link>
             </div>
           </motion.div>
-
-          <motion.div 
-            className="hero-visual"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            <div className="hero-image-stack">
-              <div className="hero-image hero-image-1">
-                <img 
-                  src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=600&q=80" 
-                  alt="Fresh vegetables"
-                />
-              </div>
-              <div className="hero-image hero-image-2">
-                <img 
-                  src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=600&q=80" 
-                  alt="Farm field"
-                />
-              </div>
-              <div className="hero-image hero-image-3">
-                <img 
-                  src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&q=80" 
-                  alt="Farmer working"
-                />
-              </div>
-            </div>
-            <div className="hero-stats">
-              <div className="stat">
-                <span className="stat-number">24+</span>
-                <span className="stat-label">Local Farms</span>
-              </div>
-              <div className="stat">
-                <span className="stat-number">200+</span>
-                <span className="stat-label">Fresh Products</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="hero-wave">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="var(--cream)"/>
-          </svg>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="features">
+      {/* How It Works Section */}
+      <section className="how-it-works-preview">
         <div className="container">
           <motion.div 
-            className="features-grid"
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true, margin: "-100px" }}
+            className="how-it-works-preview-content"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            <motion.div className="feature-card" variants={fadeInUp}>
+            <span className="section-label">Simple & Fresh</span>
+            <h2>How It Works</h2>
+          </motion.div>
+
+          <motion.div 
+            className="features-grid"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <div className="feature-card">
               <div className="feature-icon">
-                <MapPin size={28} />
+                <MapPin size={24} />
               </div>
               <h3>Truly Local</h3>
               <p>Every farm is within 25 miles. Know exactly where your food comes from.</p>
-            </motion.div>
-
-            <motion.div className="feature-card" variants={fadeInUp}>
+            </div>
+            <div className="feature-card">
               <div className="feature-icon">
-                <Truck size={28} />
+                <Truck size={24} />
               </div>
               <h3>Fresh Delivery</h3>
               <p>From harvest to your door in 24 hours. Freshness you can taste.</p>
-            </motion.div>
-
-            <motion.div className="feature-card" variants={fadeInUp}>
+            </div>
+            <div className="feature-card">
               <div className="feature-icon">
-                <Heart size={28} />
+                <Heart size={24} />
               </div>
               <h3>Support Farmers</h3>
               <p>100% of your purchase goes directly to local farming families.</p>
-            </motion.div>
-
-            <motion.div className="feature-card" variants={fadeInUp}>
+            </div>
+            <div className="feature-card">
               <div className="feature-icon">
-                <Leaf size={28} />
+                <Leaf size={24} />
               </div>
               <h3>Sustainable</h3>
               <p>Organic practices, less packaging, zero food waste commitment.</p>
-            </motion.div>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            className="how-it-works-preview-content"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <p>
+              Browse local farms, add fresh produce to your cart, and we deliver to your door within 24 hours. 
+              Every purchase supports family farms in your community.
+            </p>
+            <Link to="/how-it-works" className="btn btn-outline">
+              Learn More
+              <ArrowRight size={18} />
+            </Link>
           </motion.div>
         </div>
       </section>
 
       {/* Featured Farms Section */}
       <section className="section-farms">
+        <div className="section-farms-bg"></div>
         <div className="container">
           <motion.div 
-            className="section-header"
+            className="section-header section-header-light"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -184,7 +165,7 @@ export default function Home() {
           </motion.div>
 
           <div className="section-action">
-            <Link to="/farms" className="btn btn-outline">
+            <Link to="/farms" className="btn btn-secondary">
               View All Farms
               <ArrowRight size={18} />
             </Link>
@@ -254,7 +235,7 @@ export default function Home() {
               </blockquote>
               <div className="testimonial-author">
                 <div className="author-avatar">
-                  <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="" />
+                  <img src="/kaya.png" alt="Kaya Woo" />
                 </div>
                 <div className="author-info">
                   <span className="author-name">Kaya Woo</span>
@@ -282,10 +263,10 @@ export default function Home() {
               </blockquote>
               <div className="testimonial-author">
                 <div className="author-avatar">
-                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" alt="" />
+                  <img src="/shannon.png" alt="Shannon Halberstadt" />
                 </div>
                 <div className="author-info">
-                  <span className="author-name">James Carter</span>
+                  <span className="author-name">Shannon Halberstadt</span>
                   <span className="author-title">Food Enthusiast</span>
                 </div>
               </div>
@@ -296,12 +277,6 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="cta-section">
-        <div className="cta-bg">
-          <img 
-            src="https://images.unsplash.com/photo-1500076656116-558758c991c1?w=1600&q=80" 
-            alt=""
-          />
-        </div>
         <div className="container">
           <motion.div 
             className="cta-content"

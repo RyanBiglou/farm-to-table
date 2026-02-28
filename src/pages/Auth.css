@@ -200,6 +200,45 @@
   font-size: 1.1rem;
 }
 
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin: var(--space-lg) 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--cream-dark);
+}
+
+.auth-divider span {
+  color: var(--soil-light);
+  font-size: 0.9rem;
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  background: var(--cream);
+  color: var(--soil);
+  border: 1px solid var(--cream-dark);
+}
+
+.btn-google:hover {
+  background: var(--cream-dark);
+  border-color: var(--soil-light);
+}
+
+.btn-google .google-icon {
+  flex-shrink: 0;
+}
+
 .auth-terms {
   font-size: 0.85rem;
   color: var(--soil-light);
@@ -276,6 +315,37 @@
 .auth-success p {
   color: var(--soil-light);
   margin-bottom: var(--space-lg);
+}
+
+.auth-callback-spinner {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--forest);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.auth-resend-verification {
+  margin-top: var(--space-sm);
+}
+
+.auth-resend-verification .auth-link-btn {
+  font-size: 0.9rem;
+  padding: 0;
+  margin-top: 0.25rem;
+}
+
+.resend-success {
+  color: var(--forest) !important;
+  font-size: 0.9rem;
+  margin: var(--space-sm) 0 !important;
 }
 
 /* Decoration Side */

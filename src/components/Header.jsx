@@ -30,15 +30,9 @@ export default function Header() {
     setUserMenuOpen(false);
   };
 
-  const getUserInitial = () => {
-    if (profile?.full_name) return profile.full_name.charAt(0).toUpperCase();
-    if (user?.email) return user.email.charAt(0).toUpperCase();
-    return 'U';
-  };
-
   return (
     <header className="header">
-      <div className="header-container container">
+      <div className="header-container">
         <Link to="/" className="logo">
           <div className="logo-icon">
             <Leaf size={24} />
@@ -83,7 +77,7 @@ export default function Header() {
                 aria-expanded={userMenuOpen}
               >
                 <div className="user-avatar-small">
-                  {getUserInitial()}
+                  <User size={20} />
                 </div>
                 <ChevronDown size={16} className={`chevron ${userMenuOpen ? 'open' : ''}`} />
               </button>
@@ -111,7 +105,7 @@ export default function Header() {
                       My Account
                     </Link>
                     <Link 
-                      to="/account" 
+                      to="/account?tab=orders" 
                       className="dropdown-item"
                       onClick={() => setUserMenuOpen(false)}
                     >
@@ -119,7 +113,7 @@ export default function Header() {
                       Orders
                     </Link>
                     <Link 
-                      to="/account" 
+                      to="/account?tab=settings" 
                       className="dropdown-item"
                       onClick={() => setUserMenuOpen(false)}
                     >

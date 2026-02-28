@@ -135,6 +135,35 @@ export async function getProductsByFarmId(farmId) {
   }));
 }
 
+// Fetch orders for the current user (requires authenticated session)
+export async function getOrdersByUserId(userId) {
+  if (!supabase || !userId) return [];
+  
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching orders:', error);
+    return [];
+  }
+  
+  return (data || []).map(order => ({
+    id: order.id,
+    stripeSessionId: order.stripe_session_id,
+    customerEmail: order.customer_email,
+    customerName: order.customer_name,
+    items: order.items || [],
+    subtotal: order.subtotal ? parseFloat(order.subtotal) : 0,
+    tax: order.tax ? parseFloat(order.tax) : 0,
+    total: order.total ? parseFloat(order.total) : 0,
+    status: order.status,
+    createdAt: order.created_at,
+  }));
+}
+
 // Create an order
 export async function createOrder(orderData) {
   if (!supabase) return null;

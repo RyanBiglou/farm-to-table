@@ -37,6 +37,7 @@ CREATE TABLE products (
 CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
   stripe_session_id TEXT UNIQUE,
+  user_id UUID REFERENCES auth.users(id),
   customer_email TEXT,
   customer_name TEXT,
   shipping_address JSONB,
@@ -76,6 +77,7 @@ CREATE POLICY "Public can view products" ON products FOR SELECT USING (true);
 -- If upgrading from a setup that had "Anyone can create orders", run first:
 --   DROP POLICY IF EXISTS "Anyone can create orders" ON orders;
 CREATE POLICY "Authenticated users can create orders" ON orders FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Users can view own orders" ON orders FOR SELECT USING (user_id = auth.uid());
 
 -- Profiles: Users can view and update their own profile
 -- Using (select auth.uid()) instead of auth.uid() for better RLS performance (evaluated once, not per row)
@@ -109,7 +111,7 @@ INSERT INTO products (farm_id, name, description, price, unit, category, image, 
 (1, 'Heirloom Tomato Medley', 'A gorgeous mix of Cherokee Purple, Brandywine, and Green Zebra tomatoes.', 6.99, 'lb', 'Vegetables', 'https://images.unsplash.com/photo-1546470427-0d4db154cde8?w=600&q=80', true, true),
 (1, 'Farm Fresh Eggs', 'Dozen eggs from our happy, free-range hens. Rich orange yolks.', 7.50, 'dozen', 'Dairy & Eggs', 'https://images.unsplash.com/photo-1489761826784-04d8deae9845?w=600&q=80', true, true),
 (1, 'Mixed Salad Greens', 'A tender mix of baby lettuces, arugula, and spinach.', 5.99, 'bunch', 'Vegetables', 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=80', true, true),
-(2, 'Golden Peaches', 'Sun-ripened peaches picked at peak sweetness.', 4.99, 'lb', 'Fruits', 'https://images.unsplash.com/photo-1595124299548-b0a8ae3e2866?w=600&q=80', true, true),
+(2, 'Golden Peaches', 'Sun-ripened peaches picked at peak sweetness.', 4.99, 'lb', 'Fruits', 'https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=600&q=80', true, true),
 (2, 'Honeycrisp Apples', 'Perfectly balanced sweet-tart flavor with an explosive crunch.', 3.99, 'lb', 'Fruits', 'https://images.unsplash.com/photo-1568702846914-96b305d2ebb7?w=600&q=80', true, true),
 (2, 'Fresh-Pressed Apple Cider', 'Unfiltered, unpasteurized cider from heritage apple varieties.', 8.99, 'half gallon', 'Beverages', 'https://images.unsplash.com/photo-1572359031780-af1c1e4f5200?w=600&q=80', true, false),
 (3, 'Raw Whole Milk', 'Creamy, grass-fed milk from our pasture-raised cows.', 9.99, 'gallon', 'Dairy & Eggs', 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=600&q=80', true, false),

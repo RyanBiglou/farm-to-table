@@ -118,9 +118,16 @@ export function AuthProvider({ children }) {
       email,
       password,
       options: {
-        data: metadata
+        data: metadata,
+        emailRedirectTo: `${window.location.origin}/auth/callback`
       }
     });
+
+    // When confirm email is enabled, Supabase returns success for existing emails
+    // but identities is empty — treat as duplicate
+    if (!error && data.user && (!data.user.identities || data.user.identities.length === 0)) {
+      return { data: null, error: { message: 'An account with this email already exists. Please sign in.' } };
+    }
 
     if (!error && data.user) {
       // Create profile
@@ -134,6 +141,21 @@ export function AuthProvider({ children }) {
     }
 
     return { data, error };
+  };
+
+  const signInWithGoogle = async () => {
+    if (!supabase) {
+      return { error: { message: 'Supabase not configured' } };
+    }
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
+
+    return { error };
   };
 
   const signIn = async (email, password) => {
@@ -162,6 +184,22 @@ export function AuthProvider({ children }) {
     setUser(null);
     setProfile(null);
     return { error: null };
+  };
+
+  const resendVerificationEmail = async (email) => {
+    if (!supabase) {
+      return { error: { message: 'Supabase not configured' } };
+    }
+
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
+
+    return { error };
   };
 
   const resetPassword = async (email) => {
@@ -228,7 +266,9 @@ export function AuthProvider({ children }) {
     loading,
     signUp,
     signIn,
+    signInWithGoogle,
     signOut,
+    resendVerificationEmail,
     resetPassword,
     updateProfile,
     updateEmail,

@@ -12,6 +12,7 @@ import Products from './pages/Products'
 import Cart from './pages/Cart'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import AuthCallback from './pages/AuthCallback'
 import Account from './pages/Account'
 import HowItWorks from './pages/HowItWorks'
 import FarmPartner from './pages/FarmPartner'
@@ -38,6 +39,7 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/account" element={<Account />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/partner" element={<FarmPartner />} />

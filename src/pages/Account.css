@@ -50,7 +50,7 @@
 }
 
 .user-info p {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--soil-light);
   word-break: break-all;
 }
@@ -305,6 +305,92 @@
 .empty-state p {
   color: var(--soil-light);
   margin-bottom: var(--space-lg);
+}
+
+/* Orders List */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.order-card {
+  background: var(--cream);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  border: 1px solid var(--cream-dark);
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--cream-dark);
+}
+
+.order-id {
+  font-weight: 600;
+  color: var(--forest-dark);
+  display: block;
+}
+
+.order-date {
+  font-size: 0.875rem;
+  color: var(--soil-light);
+}
+
+.order-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+}
+
+.order-status.status-paid {
+  background: rgba(25, 123, 103, 0.15);
+  color: var(--forest);
+}
+
+.order-status.status-pending {
+  background: rgba(232, 184, 109, 0.2);
+  color: var(--soil);
+}
+
+.order-card-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: 0.9375rem;
+}
+
+.order-item-name {
+  flex: 1;
+  color: var(--soil);
+}
+
+.order-item-qty {
+  color: var(--soil-light);
+}
+
+.order-item-price {
+  font-weight: 500;
+  color: var(--forest-dark);
+}
+
+.order-card-footer {
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--cream-dark);
+  color: var(--forest-dark);
 }
 
 /* Settings */

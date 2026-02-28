@@ -69,6 +69,7 @@ export default function Footer() {
         <div className="footer-bottom">
           <p>© 2026 Farm To Table. All rights reserved.</p>
           <div className="footer-legal">
+            <span>Built By <a href="https://ryanbiglou.com" target="_blank" rel="noopener noreferrer">Ryan Biglou</a></span>
             <Link to="/privacy">Privacy Policy</Link>
             <Link to="/terms">Terms of Service</Link>
           </div>
